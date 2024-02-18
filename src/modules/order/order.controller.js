@@ -1,3 +1,4 @@
+import { request } from "express"
 import { cartModel } from "../../../databases/models/cart.model.js"
 import { orderModel } from "../../../databases/models/order.model.js"
 import { productModel } from "../../../databases/models/product.model.js"
@@ -47,7 +48,7 @@ const getAllOrders = catchError(async (req, res, next) => {
     res.status(200).json({ message: 'success', orders })
 
 })
-const creatCheckOutSession = catchError(async (req,res, next) => {
+const creatCheckOutSession = catchError(async (req, res, next) => {
     let cart = await cartModel.findById(req.params.id)
     let totalOrderPrice = cart.totalPriceAfterDiscount ? cart.totalPriceAfterDiscount : cart.totalPrice
 
@@ -61,7 +62,7 @@ const creatCheckOutSession = catchError(async (req,res, next) => {
                         name: req.user.name,
                     },
                 },
-                quantity: 1 ,
+                quantity: 1,
 
             },
         ],
@@ -77,10 +78,34 @@ const creatCheckOutSession = catchError(async (req,res, next) => {
 
 
 })
+
+
+const creatOnlineSession = catchError((request, response) => {
+
+    const sig = request.headers[stripe - signature].toString();
+    let event;
+
+    try {
+        event = Stripe.Webhook.constructEvent(request.body, sig, "whsec_yEGCBxMdLzcLo2PlWhz8NX75gLmnwEzs");
+
+    } catch (err) {
+        return response.status(400).send(`webhook Error :${err.message}`);
+
+    }
+    if(event.type=='checkout.session.completed'){
+        const checkOutSessionCompleted = event.data.object;
+        console.log("create order here........");
+    }else{
+        console.log(`unhandled event type ${event.type}`);
+    }
+
+})
+
 export {
     creatCashOrder,
     getspecificOrder,
     getAllOrders,
-    creatCheckOutSession
+    creatCheckOutSession,
+    creatOnlineSession
 
 }
