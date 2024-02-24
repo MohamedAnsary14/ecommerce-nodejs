@@ -39,7 +39,7 @@ export class ApiFeatures {
     sort() {
         if (this.searchQuery.sort) {
             let sortBy = this.searchQuery.sort.split(',').join(' ')
-            console.log(sortBy);
+           
             this.mongooseQuery.sort(sortBy)
         }
         return this
@@ -49,7 +49,7 @@ export class ApiFeatures {
     fields() {
         if (this.searchQuery.fields) {
             let fields = this.searchQuery.fields.split(',').join(' ')
-            console.log(fields);
+            
             this.mongooseQuery.select(fields)
         }
         return this

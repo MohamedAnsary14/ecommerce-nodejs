@@ -8,7 +8,6 @@ const addCategory = catchError(async (req, res, next) => {
     req.body.slug = slugify(req.body.name)
     req.body.image = req.file.filename
     let category = new categoryModel(req.body)
-    console.log(category);
     await category.save()
 
     res.json({ message: "success", category })

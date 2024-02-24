@@ -19,8 +19,7 @@ const signup = catchError(async (req, res) => {
 
 const signin = catchError(async (req, res, next) => {
     let user = await userModel.findOne({ email: req.body.email })
-    let match = bcrypt.compareSync(req.body.password, user.password)
-    console.log(match);
+    
     if (user && bcrypt.compareSync(req.body.password, user.password)) {
         let token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_KEY)
 
@@ -36,7 +35,6 @@ const signin = catchError(async (req, res, next) => {
 const changePassword = catchError(async (req, res, next) => {
 
     let user = await userModel.findById(req.user._id)
-    console.log(user);
     if (user && bcrypt.compareSync(req.body.password, user.password)) {
         let token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_KEY)
         await userModel.findByIdAndUpdate(req.user._id, { password: req.body.newPassword, passwordChangedAt: Date.now() })
@@ -55,7 +53,7 @@ const protectedRoutes = catchError(async (req, res, next) => {
     if (!user) return next(new AppError('user not found', 401))
     if (user.passwordChangedAt) {
         let time = parseInt(user?.passwordChangedAt.getTime() / 1000)
-        console.log(time + "|" + decoded.iat);
+        
         if (time > decoded.iat) return next(new AppError('invalid token..login agin'))
     }
     req.user = user
@@ -63,7 +61,7 @@ const protectedRoutes = catchError(async (req, res, next) => {
 
 })
 const allowedTo = (...roles) => {
-    console.log(roles);
+    
     return catchError(async (req, res, next) => {
         if (!roles.includes(req.user.role))
             return next(new AppError('you are not authorized', 401))
