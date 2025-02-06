@@ -3,11 +3,6 @@ import mongoose from "mongoose";
 const schema = new mongoose.Schema({
     title: {
         type: String,
-        unique: [true, 'title is required'],
-        trim: true,
-        required: true,
-        minLength: [2, 'too short product title'],
-        maxLength: [200, 'too long product title'],
     },
     slug: {
         type: String,
